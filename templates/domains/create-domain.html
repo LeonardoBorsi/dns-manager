@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% load bootstrap_icons %}
+
+{% block title %} | New Domain{% endblock title %}
+
+{% block nav %}
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="/">Home</a></li>
+    <li class="breadcrumb-item"><a href="/domains">Domains</a></li>
+    <li class="breadcrumb-item active">New Domain</li>
+  </ol>
+{% endblock nav %}
+
+{% block content %}
+
+<form method="post" id="create-domain-form" >
+  {% csrf_token %}
+  <div class="container" style="max-width: 750px;">
+    <div class="alert alert-light pt-1" style="color: black;">
+      <div class="row">
+        <div class="col-12 col-md-8 mt-2">
+          <label for="id_ip_address" class="form-label">IP Address</label>
+          <input type="text" class="form-control" id="id_ip_address" name="ip_address" required>
+        </div>
+        <div class="col-12 col-md-4 mt-2">
+          <label for="id_TLD" class="form-label">TLD</label>
+          <select class="form-select" id="id_TLD" name="TLD" required>
+            <option></option>
+            {% for tld in form.fields.TLD.queryset %}
+              <option value="{{ tld.pk }}">{{ tld.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+      <div class="row mt-2" id="names-container"> 
+        <label class="form-label">Names</label>
+        <div class="input-group col-12">
+          <input type="text" class="form-control name-input" name="name1" required>
+          <span class="input-group-text" id="tldLabel1">.</span>
+        </div>
+  
+      </div>
+      <div class="row mt-2">
+        <div class="col-12">
+          <input type="hidden" id="id_names" name="names">
+          <button type="button" class="btn btn-outline-secondary w-100" id="add-name-button">Add another name</button>
+        </div>
+      </div>
+      <div class="mt-4 d-flex justify-content-end">
+        <a href="/domains" class="btn btn-light me-2">Cancel</a>
+        <button type="submit" class="btn btn-primary">Create</button>
+      </div>
+    </div>
+  </div>
+  
+  <div id="trash-icon" style="display: none;">
+    {% bs_icon 'trash3-fill' %}
+  </div>
+</form>
+
+<script>
+  var nameCounter = 2;
+
+  function updateTldLabel(label) {
+    label.text("." + $('#id_TLD option:selected').text());
+  }
+
+  $('#id_TLD').change(function() {
+    $('.input-group-text').each(function() {
+      updateTldLabel($(this));
+    });
+  });
+
+
+  $('#add-name-button').click(function() {
+    var tldValue = $('#id_TLD option:selected').text();
+
+    var div = $('<div class="col-12 d-flex align-items-start mt-2"></div>');
+    var inputGroup = $('<div class="input-group me-2"></div>');
+    var input = $('<input type="text" class="form-control name-input" name="name' + nameCounter + '" required>');
+    var tldLabel = $('<span class="input-group-text">.' + tldValue + '</span>');
+    var button = $('<button type="button" class="btn btn-danger"></button>');
+
+
+    button.html($('#trash-icon').html());
+
+    button.click(function() {
+      div.remove();
+    });
+
+    inputGroup.append(input, tldLabel);
+    div.append(inputGroup, button)
+    $('#names-container').append(div);
+
+    nameCounter++;
+  });
+
+  $('#create-domain-form').submit(function(e) {
+      var names = [];
+      $('.name-input').each(function() {
+          names.push($(this).val());
+      });
+
+      var namesString = names.join(';');
+      $('#id_names').val(namesString);
+  });
+</script>
+{% endblock content %}

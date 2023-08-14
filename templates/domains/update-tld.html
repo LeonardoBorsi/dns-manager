@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %} | Edit TLD{% endblock title %}
+
+{% block nav %}
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a class="link-primary" href="/">Home</a></li>
+    <li class="breadcrumb-item"><a class="link-primary" href="/domains/tld">TLDs</a></li>
+    <li class="breadcrumb-item active">Edit TLD</li>
+  </ol>
+{% endblock nav %}
+
+{% block content %}
+
+<form method="post" id="create-subdomain-form" >
+  {% csrf_token %}
+  <div class="container" style="max-width: 750px;">
+    <div class="alert alert-light pt-1" style="color: black;">
+      <div class="mt-2">
+        <label for="id_name" class="form-label">Top Level Domain Name</label>
+        <input type="text" class="form-control" id="id_name" name="name" value="{{ tld.name }}" required>
+      </div>
+      <div class="mt-4 d-flex justify-content-end">
+        <a href="/domains/tld" class="btn btn-light me-2">Cancel</a>
+        <button type="submit" class="btn btn-primary">Update</button>
+      </div>
+    </div>
+  </div>
+</form>
+{% endblock content %}

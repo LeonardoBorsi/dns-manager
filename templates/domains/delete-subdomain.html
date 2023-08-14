@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %} | Delete Subdomain{% endblock title %}
+
+{% block nav %}
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a class="link-primary" href="/">Home</a></li>
+    <li class="breadcrumb-item"><a class="link-primary" href="/domains">Domains</a></li>
+    <li class="breadcrumb-item"><a class="link-primary" href="/domains/{{ subdomain.domain.pk }}">Domain Detail</a></li>
+    <li class="breadcrumb-item"><a class="link-primary" href="/domains/subdomains/{{ subdomain.pk }}">Subdomain Detail</a></li>
+    <li class="breadcrumb-item active">Delete Subdomain</li>
+  </ol>
+{% endblock nav %}
+
+{% block content %}
+<form method="post">
+  {% csrf_token %}
+  <div class="container" style="max-width: 750px;">
+    <div class="alert alert-light" style="color: black;">
+      <p>Are you sure you want to delete this subdomain?</p>
+      <div class="mt-4 d-flex justify-content-end">
+        <a href="/domains/subdomains/{{ subdomain.pk }}" class="btn btn-light me-2">Cancel</a>
+        <button type="submit" class="btn btn-danger">Delete</button>
+      </div>
+    </div>
+  </div>
+</form>
+{% endblock content %}

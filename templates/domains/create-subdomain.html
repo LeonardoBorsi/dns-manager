@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+{% load bootstrap_icons %}
+{% load split %}
+
+{% block title %} | New Subdomain{% endblock title %}
+
+{% block nav %}
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a class="link-primary" href="/">Home</a></li>
+    <li class="breadcrumb-item"><a class="link-primary" href="/domains">Domains</a></li>
+    <li class="breadcrumb-item"><a class="link-primary" href="/domains/{{ domain.pk }}">Domain Detail</a></li>
+    <li class="breadcrumb-item active">New Subdomain</li>
+  </ol>
+{% endblock nav %}
+
+{% block content %}
+<form method="post" id="create-subdomain-form" >
+  {% csrf_token %}
+  <div class="container" style="max-width: 750px;">
+    <div class="alert alert-light pt-1" style="color: black;">
+      <div class="row">
+        <div class="col-12 col-md-8 mt-2">
+          <label for="id_ip_address" class="form-label">IP Address</label>
+          <input type="text" class="form-control" id="id_ip_address" name="ip_address" value="{{ domain.ip_address }}" placeholder="Subdomain IP Address" required readonly>
+        </div>
+        <div class="col-12 col-md-4 mt-2">
+          <div class="h-100 d-flex align-items-end pb-1">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="use-domain-ip" checked>
+              <label class="form-check-label" for="copyIpAddress">Use Domain IP Address</label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row mt-2" id="names-container"> 
+        <label class="form-label">Names</label>
+        <div class="input-group col-12">
+          <input type="text" class="form-control name-input" name="name1" required>
+          <span class="input-group-text" >
+            {% for name in domain.names|split:";" %}
+              .{{ name }}<br>
+            {% endfor %}
+          </span>
+          <span class="input-group-text">
+            .{{domain.TLD.name}}
+          </span>
+        </div>
+      </div>
+      <div class="row mt-2">
+        <div class="col-12">
+          <input type="hidden" id="id_names" name="names">
+          <button type="button" class="btn btn-outline-secondary w-100" id="add-name-button">Add another name</button>
+        </div>
+      </div>
+      <div class="mt-4 d-flex justify-content-end">
+        <a href="/domains/{{ domain.pk }}" class="btn btn-light me-2">Cancel</a>
+        <button type="submit" class="btn btn-primary">Create</button>
+      </div>
+    </div>
+  </div>
+  
+  <div id="trash-icon" style="display: none;">
+    {% bs_icon 'trash3-fill' %}
+  </div>
+</form>
+<script>
+  $('#use-domain-ip').change(function() {
+    if(this.checked) {
+      $('#id_ip_address').val('{{ domain.ip_address }}');
+      $('#id_ip_address').prop("readonly", true)
+    } else {
+      $('#id_ip_address').val('');
+      $('#id_ip_address').prop("readonly", false)
+    }
+  });
+
+  var nameCounter = 2;
+
+  $('#add-name-button').click(function() {
+    var div = $('<div class="col-12 d-flex align-items-center mt-2"></div>');
+    var inputGroup = $('<div class="input-group me-2"></div>');
+    var input = $('<input type="text" class="form-control name-input" name="name' + nameCounter + '" required>');
+    var domainLabel = $(' <span class="input-group-text" >{% for name in domain.names|split:";" %}.{{ name }}<br>{% endfor %}</span>');
+    var tldLabel = $('<span class="input-group-text">.{{domain.TLD.name}}</span>');
+    var button = $('<button type="button" class="btn btn-danger"></button>');
+
+
+    button.html($('#trash-icon').html());
+
+    button.click(function() {
+      div.remove();
+    });
+
+    inputGroup.append(input, domainLabel, tldLabel);
+    div.append(inputGroup, button)
+    $('#names-container').append(div);
+
+    nameCounter++;
+  });
+
+  $('#create-subdomain-form').submit(function(e) {
+      var names = [];
+      $('.name-input').each(function() {
+          names.push($(this).val());
+      });
+
+      var namesString = names.join(';');
+      $('#id_names').val(namesString);
+  });
+</script>
+{% endblock content %}

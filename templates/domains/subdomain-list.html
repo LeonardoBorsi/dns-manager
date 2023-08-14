@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% load split %}
+
+{% block nav %}
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="/">Home</a></li>
+    <li class="breadcrumb-item active">Subdomains</li>
+  </ol>
+{% endblock nav %}
+
+{% block content %}
+<div>
+  <div class="d-flex justify-content-center">
+    <a href="/domains/create/" class="btn btn-outline-primary w-50">Add New Subdomain</a>
+  </div>
+  <table class="table table-hover mt-3">
+    <thead>
+      <tr>
+        <th class="text-primary" scope="col">Subdomain IP Address</th>
+        <th class="text-primary" scope="col">Subdomain Names</th>
+        <th class="text-primary" scope="col">Domain Names</th>
+        <th class="text-primary" scope="col">TLD</th>
+        <th class="text-primary" scope="col">Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for subdomain in subdomains %}
+        <tr class="clickable-row" data-href="{% url 'subdomain-detail' subdomain.pk %}" style="cursor: pointer;">
+          <td>{{ subdomain.ip_address }}</td>
+          <td>
+            {% for name in subdomain.names|split:";" %}
+              <div>{{ name }}</div>
+            {% endfor %}
+          </td>
+          <td>
+            {% for name in subdomain.domain.names|split:";" %}
+              <div>.{{ name }}</div>
+            {% endfor %}
+          </td>
+          <td>.{{ subdomain.domain.TLD.name }}</td>
+          <td>
+            {% if subdomain.domain.accepted is None %}
+              <span class="text-secondary">Pending</span>
+            {% elif subdomain.domain.accepted%}
+              <span class="text-success">Accepted</span>
+            {% else %}
+              <span class="text-danger">Rejected</span>
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+<script>
+  $(".clickable-row").click(function() {
+    window.location = $(this).data("href");
+  });
+</script>
+{% endblock content %}

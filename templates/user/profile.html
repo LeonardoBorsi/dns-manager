@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block title %} | Profile{% endblock title %}
+
+{% block nav %}
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a class="link-primary" href="/">Home</a></li>
+    <li class="breadcrumb-item active">Profile</li>
+  </ol>
+{% endblock nav %}
+
+{% block content %}
+<div class="container">
+  <div class="alert alert-light" style="color: black;">
+    <div>
+      <span class="text-primary fw-bold me-3">Username</span>
+      <span>{{ user.username }}</span>
+    </div>
+    <div class="mt-3">
+      <span class="text-primary fw-bold me-3">First Name</span>
+      <span>{{ user.first_name }}</span>
+    </div>
+    <div class="mt-3">
+      <span class="text-primary fw-bold me-3">Last Name</span>
+      <span>{{ user.last_name }}</span>
+    </div>
+    <div class="mt-3">
+      <span class="text-primary fw-bold me-3">Email</span>
+      <span>{{ user.email }}</span>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% load bootstrap_icons %}
+{% load split %}
+
+{% block title %} | Domains{% endblock title %}
+
+{% block nav %}
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a class="link-primary" href="/">Home</a></li>
+    <li class="breadcrumb-item active">Domains</li>
+  </ol>
+{% endblock nav %}
+
+{% block content %}
+<div class="container">
+  <div class="alert alert-light" style="color: black;">
+    {% if user.is_staff %}
+      <div class="d-flex justify-content-center mb-3">
+        <div class="btn-group" role="group" aria-label="Basic outlined example">
+          <input type="radio" class="btn-check" name="status" id="pending" autocomplete="off" checked>
+          <label class="btn btn-outline-secondary" for="pending" style="min-width: 100px;">Pending</label>
+
+          <input type="radio" class="btn-check" name="status" id="accepted" autocomplete="off">
+          <label class="btn btn-outline-success" for="accepted" style="min-width: 100px;">Accepted</label>
+
+          <input type="radio" class="btn-check" name="status" id="rejected" autocomplete="off">
+          <label class="btn btn-outline-danger" for="rejected" style="min-width: 100px;">Rejected</label>
+
+          <input type="radio" class="btn-check" name="status" id="all" autocomplete="off">
+          <label class="btn btn-outline-primary" for="all" style="min-width: 100px;">All</label>
+        </div>
+      </div>
+    {% else %}
+      <div class="d-flex justify-content-center mb-3">
+        <a href="/domains/create/" class="btn btn-outline-primary w-50">
+          {% bs_icon 'plus-lg' size='1em' extra_classes="mb-1 me-1" %} Add New Domain
+        </a>
+      </div>
+    {% endif %}
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th class="text-primary" scope="col">Domain IP Address</th>
+          <th class="text-primary" scope="col">Domain Names</th>
+          <th class="text-primary" scope="col">TLD</th>
+          <th class="text-primary" scope="col">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for domain in domains %}
+          <tr
+            class="clickable-row domain-row
+              {% if domain.accepted is None %} pending 
+              {% elif domain.accepted %} accepted 
+              {% else %} rejected 
+              {% endif %}"
+            data-href="{% url 'domain-detail' domain.pk %}"
+            style="cursor: pointer;"
+          >
+            <td><span class="font-monospace">{{ domain.ip_address }}</span></td>
+            <td>
+              {% for name in domain.names|split:";" %}
+                <div>{{ name }}</div>
+              {% endfor %}
+            </td>
+            <td>.{{ domain.TLD.name }}</td>
+            <td>
+              {% if domain.accepted is None %}
+                <span class="text-secondary fw-normal">
+                  {% bs_icon 'hourglass-split' size='1em' extra_classes="mb-1" %}PENDING
+                </span>
+              {% elif domain.accepted%}
+                <span class="text-success">
+                  {% bs_icon 'check-circle-fill' size='1em' extra_classes="mb-1" %}ACCEPTED
+                </span>
+              {% else %}
+                <span class="text-danger">
+                  {% bs_icon 'x-circle-fill' size='1em' extra_classes="mb-1" %}REJECTED
+                </span>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+<script>
+  function filterDomainsByStatus(status) {
+      // Inizialmente mostra tutte le righe
+      $(".domain-row").show();
+
+      if (status == "pending") {
+          $(".accepted, .rejected").hide();
+      } else if (status == "accepted") {
+          $(".pending, .rejected").hide();
+      } else if (status == "rejected") {
+          $(".pending, .accepted").hide();
+      } // Se status == "all", lascia tutto visibile
+  }
+
+  // Listener al cambiamento
+  $("input[name='status']").change(function() {
+      var status = $(this).attr('id');
+      filterDomainsByStatus(status);      
+  });
+
+  // Filtra subito alla pagina caricata
+  filterDomainsByStatus("pending");
+
+  $(".clickable-row").click(function() {
+      window.location = $(this).data("href");
+  });
+</script>
+{% endblock content %}

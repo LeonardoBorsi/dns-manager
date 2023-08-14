@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+{% load bootstrap_icons %}
+{% load split %}
+
+{% block title %} | Domain Detail{% endblock title %}
+
+{% block nav %}
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a class="link-primary" href="/">Home</a></li>
+    <li class="breadcrumb-item"><a class="link-primary" href="/domains">Domains</a></li>
+    <li class="breadcrumb-item active">Domain Detail</li>
+  </ol>
+{% endblock nav %}
+
+{% block content %}
+<div class="container">
+  <div class="alert alert-light" style="color: black;">
+    <div class="d-flex justify-content-between">
+      <div>
+        <div>
+          <span class="text-primary fw-bold me-3">Domain IP Address</span>
+          <span class="font-monospace">{{ domain.ip_address }}</span>
+        </div>
+        <div class="mt-3">
+          <span class="text-primary fw-bold me-3">Created on</span>
+          <span>{{ domain.created_at }}</span>
+        </div>
+        <div class="mt-3">
+          <span class="text-primary fw-bold me-3">Status</span>
+          {% if domain.accepted is None %}
+            <span class="text-secondary fw-normal">
+              {% bs_icon 'hourglass-split' size='1em' extra_classes="mb-1" %}PENDING
+            </span>
+          {% elif domain.accepted%}
+            <span class="text-success">
+              {% bs_icon 'check-circle-fill' size='1em' extra_classes="mb-1" %}ACCEPTED
+            </span>
+          {% else %}
+            <span class="text-danger">
+              {% bs_icon 'x-circle-fill' size='1em' extra_classes="mb-1" %}REJECTED
+            </span>
+          {% endif %}
+        </div>
+        {% if domain.accepted is not None %}
+          {% if domain.accepted  %}
+            <div class="mt-3">
+              <span class="text-primary fw-bold me-3">Accepted on</span>
+              <span>{{ domain.verified_at }}</span>
+            </div>
+          {% else %}
+            <div class="mt-3">
+              <span class="text-primary fw-bold me-3">Rejected on</span>
+              <span>{{ domain.verified_at }}</span>
+            </div>
+          {% endif %}
+        {% endif %}
+        <div class="mt-3">
+          <span class="text-primary fw-bold me-3">Top Level Domain</span>
+          <span>.{{ domain.TLD.name }}</span>
+        </div>
+        <div class="mt-3">
+          <span class="text-primary fw-bold">Domain Names</span>
+          <div class="d-flex align-items-center mt-2">
+            <ul class="list-group">
+              {% for name in domain.names|split:";" %}
+                <li class="list-group-item">{{ name }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+        <div class="mt-3">
+          <span class="text-primary fw-bold">URLs</span>
+          <div class="d-flex align-items-center mt-2">
+            <ul class="list-group">
+              {% for name in domain.names|split:";" %}
+                <li class="list-group-item">
+                  <a class="link-secondary" href="http://www.{{ name }}.{{ domain.TLD.name }}">
+                    www.{{ name }}.{{ domain.TLD.name }}
+                  </a>
+                </li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div>
+        {% if user.is_staff %}
+          {% if domain.accepted is None %}
+            <a href="{% url 'accept-domain' domain.pk %}" class="btn btn-success me-1">
+              {% bs_icon 'check-circle-fill' size='1em' extra_classes="mb-1 me-1" %} Accept
+            </a>
+            <a href="{% url 'reject-domain' domain.pk %}" class="btn btn-danger">
+              {% bs_icon 'x-circle-fill' size='1em' extra_classes="mb-1 me-1" %} Reject
+            </a>
+          {% endif %}
+        {% else %}
+          <a href="{% url 'update-domain' domain.pk %}" class="btn btn-primary me-1">
+            {% bs_icon 'pencil-fill' size='1em' extra_classes="mb-1 me-1" %} Edit Domain
+          </a>
+          <a href="{% url 'delete-domain' domain.pk %}" class="btn btn-danger">
+            {% bs_icon 'trash3-fill' size='1em' extra_classes="mb-1 me-1" %} Delete Domain
+          </a>
+        {% endif %}
+
+       
+      </div>
+    </div>
+    {% if subdomains|length > 0 %}
+      <table class="table table-hover mt-3">
+        <thead>
+          <tr>
+            <th class="text-primary" scope="col">Subdomain IP Address</th>
+            <th class="text-primary" scope="col">Subdomain Names</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for subdomain in subdomains %}
+            <tr class="clickable-row" data-href="{% url 'subdomain-detail' subdomain.pk %}" style="cursor: pointer;">
+              <td><span class="font-monospace">{{ subdomain.ip_address }}</span></td>
+              <td>
+                {% for name in subdomain.names|split:";" %}
+                  <div>{{ name }}</div>
+                {% endfor %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% endif %}
+    {% if user.is_staff == False %}
+      <div class="d-flex justify-content-center mt-4 pb-2">
+        <a href="{% url 'create-subdomain' domain.pk %}" class="btn btn-outline-primary w-50">
+          {% bs_icon 'plus-lg' size='1em' extra_classes="mb-1 me-1" %} Add Subdomain
+        </a>
+      </div>
+    {% endif %}
+  </div>
+</div>
+<script>
+  $(".clickable-row").click(function() {
+    window.location = $(this).data("href");
+  });
+</script>
+{% endblock content %}

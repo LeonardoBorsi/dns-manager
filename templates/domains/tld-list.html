@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% load bootstrap_icons %}
+{% load split %}
+
+{% block title %} | TLDs{% endblock title %}
+
+{% block nav %}
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a class="link-primary" href="/">Home</a></li>
+    <li class="breadcrumb-item active">TLDs</li>
+  </ol>
+{% endblock nav %}
+
+{% block content %}
+<div class="container">
+  <div class="alert alert-light" style="color: black;">
+    <div class="d-flex justify-content-center mb-3">
+      <a href="/domains/tld/create-tld/" class="btn btn-outline-primary w-50">
+        {% bs_icon 'plus-lg' size='1em' extra_classes="mb-1 me-1" %} Add New TLD
+      </a>
+    </div>
+    <table class="table">
+      <thead>
+        <tr>
+          <th class="text-primary" scope="col">TLD</th>
+          <th class="text-primary" scope="col">Used in some domain</th>
+          <th scope="col"></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for tld in tlds %}
+          <tr>
+            <td>{{ tld.name }}</td>
+            <td>
+              {% if tld.id in tlds_in_use %}
+                <span class="text-success">
+                  {% bs_icon 'check-lg' size='1.2em' %}
+                </span>
+              {% endif %}
+            </td>
+            <td class="d-flex justify-content-end">
+              <a href="{% url 'update-tld' tld.pk %}" class="btn btn-sm btn-primary me-2">
+                {% bs_icon 'pencil-fill' size='1em' extra_classes="mb-1 me-1" %} Edit
+              </a>
+              
+              {% if tld.id not in tlds_in_use %}
+                <a href="{% url 'delete-tld' tld.pk %}" class="btn btn-sm btn-danger">
+                  {% bs_icon 'trash3-fill' size='1em' extra_classes="mb-1 me-1" %} Delete
+                </a>
+              {% else %}
+                <button class="btn btn-sm btn-danger" disabled>
+                  {% bs_icon 'trash3-fill' size='1em' extra_classes="mb-1 me-1" %} Delete
+                </button>
+              {% endif %}
+
+              
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock content %}

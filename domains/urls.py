@@ -1,0 +1,36 @@
+from django.urls import path
+from .views import (
+    DomainDetailView,
+    DomainListView,
+    DomainCreateView,
+    DomainUpdateView,
+    DomainDeleteView,
+    AcceptDomainView,
+    RejectDomainView,
+    SubDomainDeleteView,
+    SubDomainDetailView,
+    SubDomainCreateView,
+    SubDomainUpdateView,
+    TLDDeleteView,
+    TLDListView,
+    TLDCreateView,
+    TLDUpdateView,
+)
+
+urlpatterns = [
+    path("create/", DomainCreateView.as_view(), name="create-domain"),
+    path("", DomainListView.as_view(), name='domain-list'),
+    path("<int:pk>", DomainDetailView.as_view(), name='domain-detail'),
+    path("<int:pk>/update/", DomainUpdateView.as_view(), name='update-domain'),
+    path("<int:pk>/delete/", DomainDeleteView.as_view(), name="delete-domain"),
+    path("<int:pk>/accept/", AcceptDomainView.as_view(), name='accept-domain'),
+    path("<int:pk>/reject/", RejectDomainView.as_view(), name='reject-domain'),
+    path("<int:pk>/create-subdomain/", SubDomainCreateView.as_view(), name='create-subdomain'),
+    path('subdomains/<int:pk>', SubDomainDetailView.as_view(), name='subdomain-detail'),
+    path('subdomains/<int:pk>/update/', SubDomainUpdateView.as_view(), name='update-subdomain'),
+    path('subdomains/<int:pk>/delete/', SubDomainDeleteView.as_view(), name='delete-subdomain'),
+    path('tld', TLDListView.as_view(), name='tld-list'),
+    path('tld/create-tld/', TLDCreateView.as_view(), name='create-tld'),
+    path('tld/<int:pk>/update/', TLDUpdateView.as_view(), name='update-tld'),
+    path('tld/<int:pk>/delete/', TLDDeleteView.as_view(), name='delete-tld'),
+]
