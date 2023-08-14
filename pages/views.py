@@ -1,3 +1,5 @@
+from django.http import JsonResponse
+from django.views import View
 from django.views.generic import (TemplateView, FormView)
 from django.contrib.auth.views import (LoginView, LogoutView)
 from django.contrib.auth.forms import UserCreationForm
@@ -33,3 +35,11 @@ class ProfilePageView(LoginRequiredMixin, DetailView):
     def get_object(self):
         # Ritorna l'utente corrente
         return self.request.user
+    
+class CreateSuperuserView(View):
+    def get(request):
+      if not User.objects.filter(is_superuser=True).exists():
+          User.objects.create_superuser('leonardo', 'leonardo.borsi@gmail.com', 'leonardo')
+          return JsonResponse({"status": "Superuser created"})
+      else:
+          return JsonResponse({"status": "Superuser already exists"})
