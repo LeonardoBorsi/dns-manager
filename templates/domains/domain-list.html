@@ -113,5 +113,11 @@
         window.location = $(this).data("href");
     });
   </script>
+{% else %}
+<script>
+  $(".clickable-row").click(function() {
+      window.location = $(this).data("href");
+  });
+</script>
 {% endif %}
 {% endblock content %}
