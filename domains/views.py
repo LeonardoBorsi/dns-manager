@@ -1,11 +1,11 @@
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.views import View
+from django.utils import timezone
 from django.views.generic import ListView, DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from .models import TLD, Domain, SubDomain
 from .forms import DomainForm, SubDomainForm, TLDForm
-from django.contrib import messages
     
 class DomainListView(ListView):
     model = Domain
@@ -56,6 +56,7 @@ class AcceptDomainView(View):
     def get(self, request, *args, **kwargs):
         domain = get_object_or_404(Domain, pk=kwargs['pk'])
         domain.accepted = True
+        domain.verified_at = timezone.now()
         domain.save()
         return redirect('domain-detail', pk=kwargs['pk'])
 
@@ -63,6 +64,7 @@ class RejectDomainView(View):
     def get(self, request, *args, **kwargs):
         domain = get_object_or_404(Domain, pk=kwargs['pk'])
         domain.accepted = False
+        domain.verified_at = timezone.now()
         domain.save()
         return redirect('domain-detail', pk=kwargs['pk'])
 
