@@ -37,7 +37,7 @@ class ProfilePageView(LoginRequiredMixin, DetailView):
         return self.request.user
     
 class CreateSuperuserView(View):
-    def get(request):
+    def get(self, request):
       if not User.objects.filter(is_superuser=True).exists():
           User.objects.create_superuser('leonardo', 'leonardo.borsi@gmail.com', 'leonardo')
           return JsonResponse({"status": "Superuser created"})
