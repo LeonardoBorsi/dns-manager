@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block title %} | Register{% endblock title %}
 {% block authcontent %}
-    <form method="post" class="px-3" style="max-height: 450px; overflow-y: scroll;">
+    <form method="post" class="px-3" style="max-height: 50vh; overflow-y: scroll;">
         {% csrf_token %}
         <div class="mt-3">
           <label for="id_username" class="form-label">Username</label>
