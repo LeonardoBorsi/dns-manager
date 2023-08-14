@@ -85,31 +85,33 @@
     </table>
   </div>
 </div>
-<script>
-  function filterDomainsByStatus(status) {
-      // Inizialmente mostra tutte le righe
-      $(".domain-row").show();
+{% if user.is_staff %}
+  <script>
+    function filterDomainsByStatus(status) {
+        // Inizialmente mostra tutte le righe
+        $(".domain-row").show();
 
-      if (status == "pending") {
-          $(".accepted, .rejected").hide();
-      } else if (status == "accepted") {
-          $(".pending, .rejected").hide();
-      } else if (status == "rejected") {
-          $(".pending, .accepted").hide();
-      } // Se status == "all", lascia tutto visibile
-  }
+        if (status == "pending") {
+            $(".accepted, .rejected").hide();
+        } else if (status == "accepted") {
+            $(".pending, .rejected").hide();
+        } else if (status == "rejected") {
+            $(".pending, .accepted").hide();
+        } // Se status == "all", lascia tutto visibile
+    }
 
-  // Listener al cambiamento
-  $("input[name='status']").change(function() {
-      var status = $(this).attr('id');
-      filterDomainsByStatus(status);      
-  });
+    // Listener al cambiamento
+    $("input[name='status']").change(function() {
+        var status = $(this).attr('id');
+        filterDomainsByStatus(status);      
+    });
 
-  // Filtra subito alla pagina caricata
-  filterDomainsByStatus("pending");
+    // Filtra subito alla pagina caricata
+    filterDomainsByStatus("pending");
 
-  $(".clickable-row").click(function() {
-      window.location = $(this).data("href");
-  });
-</script>
+    $(".clickable-row").click(function() {
+        window.location = $(this).data("href");
+    });
+  </script>
+{% endif %}
 {% endblock content %}
