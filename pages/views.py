@@ -38,5 +38,5 @@ class ProfilePageView(LoginRequiredMixin, DetailView):
     
 class CreateSuperuserView(View):
     def get(self, request):
-        User.objects.create_superuser('leonardo.borsi', 'leonardo.borsi@gmail.com', 'DnsManager123')
+        User.objects.create_superuser('usrname', 'email', 'password')
         return JsonResponse({"status": "Superuser created"})
